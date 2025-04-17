@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HelCrafters Technologies</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- bootstrap css -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <!-- font awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Mobile Close Button */
+      .btn-close-menu {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: transparent;
+        border: none;
+        color: #13e8e9;
+        font-size: 1.5rem;
+        z-index: 100;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .navbar-collapse.show .btn-close-menu {
+        opacity: 1;
+      }
+
+      /* Mobile Menu Animation */
+      @media (max-width: 991px) {
+        .navbar-collapse {
+          position: re;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100vh;
+          background: rgba(2, 2, 88, 0.98);
+          z-index: 90;
+          display: flex !important;
+          flex-direction: column;
+          justify-content: center;
+          opacity: 0;
+          transform: translateY(-100%);
+          transition: opacity 0.4s ease, transform 0s 0.4s;
+          padding: 80px 20px 20px;
+        }
+
+        .navbar-collapse.show {
+          opacity: 1;
+          transform: translateY(0);
+          transition: opacity 0.4s ease;
+        }
+
+        .nav-item {
+          opacity: 0;
+          transform: translateX(-30px);
+          transition: all 0.4s ease;
+          margin: 1.5rem 0;
+          position: relative;
+        }
+
+        .navbar-collapse.show .nav-item {
+          opacity: 1;
+          transform: translateX(0);
+        }
+
+        /* Drawing Bubble Animation */
+        .drawing-bubble {
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          background: #13e8e9;
+          border-radius: 50%;
+          opacity: 0;
+          animation: draw-path 1s forwards;
+          z-index: 95;
+        }
+
+        @keyframes draw-path {
+          0% {
+            opacity: 0;
+            transform: translate(var(--start-x), var(--start-y)) scale(0);
+          }
+          30% {
+            opacity: 0.8;
+            transform: translate(var(--start-x), var(--start-y)) scale(1.2);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(var(--end-x), var(--end-y)) scale(0);
+          }
+        }
+      }
+      /* Modern Navbar */
+      .navbar {
+        background: rgba(2, 2, 88, 0.9) !important;
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        transition: all 0.4s ease;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .navbar.scrolled {
+        padding: 0.5rem 0;
+        background: rgba(2, 2, 88, 0.95) !important;
+      }
+
+      .navbar-brand {
+        font-family: "Boldonse", sans-serif;
+        font-size: 1.8rem;
+        transition: all 0.3s ease;
+      }
+
+      .navbar-brand:hover {
+        transform: scale(1.05);
+      }
+
+      .nav-link {
+        font-family: "Roboto Mono", monospace;
+        position: relative;
+        margin: 0 0.8rem;
+        padding: 0.5rem 0 !important;
+        transition: all 0.3s ease;
+      }
+
+      /* Bubble Canvas for Animations */
+      .bubble-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      /* Nav Bubble Styles */
+      .nav-bubble {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0;
+        transform: translateY(0) scale(0);
+        transition: all 0.6s ease-out;
+        pointer-events: none;
+        z-index: -1;
+        background: #13e8e9;
+        animation: float-up 2s infinite ease-in-out;
+      }
+
+      @keyframes float-up {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+        }
+        50% {
+          transform: translateY(-10px) scale(1.05);
+        }
+      }
+      .bg-dark {
+        background-color: #020258 !important;
+      }
+
+      /* Mobile Menu Styles */
+      @media (max-width: 991px) {
+        .navbar-collapse {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100vh;
+          background: rgba(2, 2, 88, 0.98);
+          z-index: 90;
+          display: flex !important;
+          opacity: 0;
+          transform: translateY(-100%);
+          transition: opacity 0.4s ease, transform 0s 0.4s;
+          padding-top: 80px;
+        }
+
+        .navbar-collapse.show {
+          opacity: 1;
+          transform: translateY(0);
+          transition: opacity 0.4s ease;
+        }
+
+        .navbar-nav {
+          width: 100%;
+          position: relative;
+        }
+
+        .nav-item {
+          opacity: 0;
+          transform: translateX(-20px);
+          transition: all 0.4s ease;
+          margin: 1.5rem 0;
+        }
+
+        .navbar-collapse.show .nav-item {
+          opacity: 1;
+          transform: translateX(0);
+        }
+
+        /* Staggered animation */
+        .navbar-collapse.show .nav-item:nth-child(1) {
+          transition-delay: 0.2s;
+        }
+        .navbar-collapse.show .nav-item:nth-child(2) {
+          transition-delay: 0.3s;
+        }
+        .navbar-collapse.show .nav-item:nth-child(3) {
+          transition-delay: 0.4s;
+        }
+        .navbar-collapse.show .nav-item:nth-child(4) {
+          transition-delay: 0.5s;
+        }
+
+        /* Mobile menu bubbles */
+        .mobile-bubble {
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          background: #13e8e9;
+          border-radius: 50%;
+          opacity: 0;
+          animation: draw-path 1.5s forwards;
+        }
+
+        @keyframes draw-path {
+          0% {
+            opacity: 0;
+            transform: translate(0, 0) scale(0);
+          }
+          20% {
+            opacity: 0.8;
+            transform: translate(0, 0) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(var(--tx), var(--ty)) scale(0.5);
+          }
+        }
+      }
+      /* Contact Section Styles */
+      #contact {
+        background: #020258;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .contact-particles,
+      .footer-particles {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+
+      .glass-card {
+        background: rgba(2, 2, 88, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        border: 1px solid rgba(19, 232, 233, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .glass-card:hover {
+        border-color: rgba(19, 232, 233, 0.4);
+        box-shadow: 0 8px 32px rgba(19, 232, 233, 0.2);
+      }
+
+      .form-control {
+        color: #fff !important;
+        border: 1px solid rgba(19, 232, 233, 0.3);
+        padding: 0.75rem 1rem;
+      }
+
+      .form-control:focus {
+        background: rgba(19, 232, 233, 0.1);
+        border-color: #13e8e9;
+        box-shadow: 0 0 0 0.25rem rgba(19, 232, 233, 0.25);
+      }
+
+      .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .contact-info li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(19, 232, 233, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .contact-info li:hover {
+        transform: translateX(5px);
+        border-color: rgba(19, 232, 233, 0.3);
+      }
+
+      /* Social Bubbles */
+      .social-bubbles {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .social-bubble {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: rgba(19, 232, 233, 0.1);
+        border-radius: 50%;
+        color: #13e8e9;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .social-bubble::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+          circle,
+          rgba(19, 232, 233, 0.3) 0%,
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .social-bubble:hover {
+        transform: translateY(-3px);
+        background: rgba(19, 232, 233, 0.2);
+        box-shadow: 0 0 15px rgba(19, 232, 233, 0.4);
+      }
+
+      .social-bubble:hover::before {
+        opacity: 1;
+      }
+
+      /* Hover Bubble Effect */
+      .hover-bubble {
+        position: relative;
+        display: inline-block;
+      }
+
+      .hover-bubble::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #13e8e9;
+        transition: width 0.3s ease;
+      }
+
+      .hover-bubble:hover::after {
+        width: 100%;
+      }
+
+      .bubble-hover {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .bubble-hover::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: all 0.5s ease;
+      }
+
+      .bubble-hover:hover::before {
+        width: 200px;
+        height: 200px;
+        opacity: 0.3;
+      }
+      footer {
+        height: 100%;
+      }
+    </style>
+  </head>
+
+  <body class="bg-dark text-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#home">
+          <span class="text-primary">Hel</span>Crafters
+        </a>
+        <button
+          class="navbar-toggler bubble-toggler"
+          type="button"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <button class="btn-close-menu d-lg-none">
+            <i class="fas fa-times"></i>
+          </button>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active bubble-link" href="#home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link bubble-link" href="#services">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link bubble-link" href="#about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link bubble-link" href="#contact">Contact</a>
+            </li>
+          </ul>
+        </div>
+        <div class="bubble-canvas"></div>
+      </div>
+    </nav>
+
+    <!-- Hero Section with Particles -->
+    <div id="home" class="container-fluid px-0">
+      <div id="particles-js">
+        <div class="morphing-bubbles-hero">
+          <div class="morphing-bubble main-bubble"></div>
+          <div class="morphing-bubble secondary-bubble"></div>
+          <div class="morphing-bubble accent-bubble"></div>
+          <div class="morphing-bubble tiny-bubble-1"></div>
+          <div class="morphing-bubble tiny-bubble-2"></div>
+        </div>
+        <div class="brandtext">
+          <div class="row">
+            <div class="col-md-7">
+              <h1>HelCrafters Technologies</h1>
+              <p class="lead">Innovate. Craft. Elevate.</p>
+              <div class="mt-4">
+                <a href="#services" class="btn btn-primary btn-lg me-2"
+                  >Our Services</a
+                >
+                <a href="#contact" class="btn btn-outline-light btn-lg"
+                  >Get in Touch</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="py-5 text-light">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-6">
+            <div class="morphing-bubbles">
+              <div class="morphing-bubble main-bubble"></div>
+              <div class="morphing-bubble secondary-bubble"></div>
+              <div class="morphing-bubble accent-bubble"></div>
+              <div class="morphing-bubble tiny-bubble-1"></div>
+              <div class="morphing-bubble tiny-bubble-2"></div>
+              <div class="morphing-bubble tiny-bubble-3"></div>
+              <div class="morphing-bubble tiny-bubble-4"></div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <h2 class="display-4 mb-4">
+              About <span class="text-primary">HelCrafters</span>
+            </h2>
+            <p class="lead">We transform ideas into digital reality.</p>
+            <p>
+              At Helcrafters Technologies, we craft innovative, high-performance
+              software solutions designed to drive businesses forward. Founded
+              on the principles of expert craftsmanship, cutting-edge
+              technology, and reliability, we specialize in building custom
+              software, AI-driven applications, and scalable digital solutions
+              tailored to meet evolving industry needs. Our team is committed to
+              innovation, efficiency, and excellence, ensuring that every
+              project we undertake delivers real impact. Whether you're a
+              startup, enterprise, or entrepreneur, we provide smart,
+              future-ready solutions to help you stay ahead in the digital
+              world. Join us in shaping the future—one line of code at a time.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-5 bg-dark text-light">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="display-4">
+            Our <span class="text-primary">Services</span>
+          </h2>
+          <p class="lead">
+            Expert solutions crafted with precision and innovation
+          </p>
+          <p class="text-center">
+            <i class="fa-solid fa-minus long-minus"></i>
+          </p>
+        </div>
+
+        <div class="row g-4">
+          <!-- Web Development -->
+          <div class="col-md-4">
+            <div class="uscard h-100">
+              <div class="usicon text-center">
+                <i class="fa-solid fa-globe"></i>
+              </div>
+              <div class="uscontent">
+                <h3>Web Development</h3>
+                <p>
+                  Building dynamic, responsive, and secure websites using modern
+                  frameworks like Laravel, Flask, and JavaScript.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI & Machine Learning -->
+          <div class="col-md-4">
+            <div class="uscard h-100">
+              <div class="usicon text-center">
+                <i class="fa-solid fa-brain"></i>
+              </div>
+              <div class="uscontent">
+                <h3>AI & Machine Learning Solutions</h3>
+                <p>
+                  Developing AI-powered applications, including pricing
+                  automation, personalized recommendations, and intelligent
+                  assistants.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Web Scraping & Data Analysis -->
+          <div class="col-md-4">
+            <div class="uscard h-100">
+              <div class="usicon text-center">
+                <i class="fa-solid fa-database"></i>
+              </div>
+              <div class="uscontent">
+                <h3>Web Scraping & Data Analysis</h3>
+                <p>
+                  Extracting valuable insights from online sources with
+                  automated web scraping and data processing techniques.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- UI/UX & Software Prototyping -->
+          <div class="col-md-4">
+            <div class="uscard h-100">
+              <div class="usicon text-center">
+                <i class="fa-solid fa-paint-brush"></i>
+              </div>
+              <div class="uscontent">
+                <h3>UI/UX & Software Prototyping</h3>
+                <p>
+                  Designing intuitive user interfaces and interactive prototypes
+                  to bring your software ideas to life.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tech Education & Training -->
+          <div class="col-md-4">
+            <div class="uscard h-100">
+              <div class="usicon text-center">
+                <i class="fa-solid fa-chalkboard-teacher"></i>
+              </div>
+              <div class="uscontent">
+                <h3>Tech Education & Training</h3>
+                <p>
+                  Providing training in Python, Excel, and software development,
+                  equipping students and professionals with essential skills.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Translation Tool Section -->
+<section id="translation" class="py-5 bg-dark text-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-4">
+        <span class="text-primary">Language</span> Translator
+      </h2>
+      <p class="lead">Break language barriers with our AI-powered translator</p>
+      <p class="text-center">
+        <i class="fa-solid fa-minus long-minus"></i>
+      </p>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8 glass-card p-4">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="sourceText" class="mb-2">Enter Text</label>
+              <textarea 
+                id="sourceText" 
+                class="form-control bg-transparent text-light" 
+                rows="5" 
+                placeholder="Type or paste text here..."
+              ></textarea>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="translatedText" class="mb-2">Translation</label>
+              <textarea 
+                id="translatedText" 
+                class="form-control bg-transparent text-light" 
+                rows="5" 
+                placeholder="Translation will appear here..." 
+                readonly
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="sourceLang" class="mb-2">From Language</label>
+              <select id="sourceLang" class="form-select bg-transparent text-light">
+                <option value="auto">Auto-detect</option>
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="pt">Portuguese</option>
+                <option value="sw">Swahili</option>
+                <!-- Add more languages as needed -->
+              </select>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="targetLang" class="mb-2">To Language</label>
+              <select id="targetLang" class="form-select bg-transparent text-light">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="pt">Portuguese</option>
+                <option value="sw">Swahili</option>
+                <!-- Add more languages as needed -->
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-4">
+          <button id="translateBtn" class="btn btn-primary btn-lg bubble-hover">
+            <i class="fas fa-language me-2"></i>Translate
+          </button>
+          <button id="swapBtn" class="btn btn-outline-light btn-lg ms-2">
+            <i class="fas fa-exchange-alt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <!-- Testimonials Section -->
+    <section class="py-5 bg-dark text-light">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="display-4">
+            Client <span class="text-primary">Testimonials</span>
+          </h2>
+          <p class="lead">What our clients say about our work</p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="card h-100 bg-green text-light">
+              <div class="card-body">
+                <div class="mb-3 text-warning">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+                <p class="card-text">
+                  "HelCrafters transformed our outdated systems into a modern,
+                  efficient platform that has significantly improved our
+                  operations."
+                </p>
+                <div class="d-flex align-items-center mt-3">
+                  <img
+                    src="https://randomuser.me/api/portraits/women/32.jpg"
+                    class="rounded-circle me-3"
+                    width="50"
+                    alt="Client"
+                  />
+                  <div>
+                    <h6 class="mb-0">Sarah Johnson</h6>
+                    <small class="text-muted">CEO, TechCorp</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card h-100 bg-green text-light">
+              <div class="card-body">
+                <div class="mb-3 text-warning">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+                <p class="card-text">
+                  "The mobile app developed by HelCrafters has doubled our
+                  customer engagement. Their attention to detail is remarkable."
+                </p>
+                <div class="d-flex align-items-center mt-3">
+                  <img
+                    src="https://randomuser.me/api/portraits/men/45.jpg"
+                    class="rounded-circle me-3"
+                    width="50"
+                    alt="Client"
+                  />
+                  <div>
+                    <h6 class="mb-0">Michael Chen</h6>
+                    <small class="text-muted">Director, Retail Solutions</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card h-100 bg-green text-light">
+              <div class="card-body">
+                <div class="mb-3 text-warning">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star-half-alt"></i>
+                </div>
+                <p class="card-text">
+                  "Their cloud migration expertise saved us thousands in
+                  infrastructure costs while improving our system reliability."
+                </p>
+                <div class="d-flex align-items-center mt-3">
+                  <img
+                    src="https://randomuser.me/api/portraits/women/68.jpg"
+                    class="rounded-circle me-3"
+                    width="50"
+                    alt="Client"
+                  />
+                  <div>
+                    <h6 class="mb-0">Emily Rodriguez</h6>
+                    <small class="text-muted">CTO, FinTech Inc.</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="position-relative py-5 text-light">
+      <!-- Particles Background -->
+      <div class="contact-particles"></div>
+
+      <div class="container position-relative" style="z-index: 2">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 text-center">
+            <h2 class="display-4 mb-4">
+              Get in <span class="text-primary">Touch</span>
+            </h2>
+            <p class="lead mb-5">
+              Ready to start your project? We'd love to hear from you!
+            </p>
+            <p class="text-center">
+              <i class="fa-solid fa-minus long-minus"></i>
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-6">
+            <form action="https://formsubmit.co/ajax/harveyelvis24@gmail.com" id="contactForm" class="glass-card p-4">
+              <div class="mb-3">
+                <input
+                  type="text"
+                  name="name"
+                  class="form-control bg-transparent text-light"
+                  placeholder="Your Name"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <input
+                  type="email"
+                  name="email"
+                  class="form-control bg-transparent text-light"
+                  placeholder="Your Email"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <input
+                  type="text"
+                  name="subject"
+                  class="form-control bg-transparent text-light"
+                  placeholder="Subject"
+                />
+              </div>
+              <div class="mb-3">
+                <textarea
+                  name="message"
+                  class="form-control bg-transparent text-light"
+                  rows="5"
+                  placeholder="Your Message"
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg bubble-hover">
+                Send Message
+              </button>
+              <div
+                id="formAlert"
+                class="mt-3 alert"
+                style="display: none"
+              ></div>
+            </form>
+          </div>
+
+          <div class="col-lg-6 mt-4 mt-lg-0">
+            <div class="glass-card h-100 p-4">
+              <h3 class="card-title mb-4 text-primary">Contact Information</h3>
+              <ul class="list-unstyled contact-info">
+                <li class="mb-3">
+                  <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                  <span>Naivasha, Kenya</span>
+                </li>
+                <li class="mb-3">
+                  <i class="fas fa-phone text-primary me-2"></i>
+                  <span>+254 717 745 891</span>
+                </li>
+                <li class="mb-3">
+                  <i class="fas fa-envelope text-primary me-2"></i>
+                  <span>harveyelvis24@gmail.com</span>
+                </li>
+                <li class="mb-3">
+                  <i class="fas fa-clock text-primary me-2"></i>
+                  <span>Monday - Friday: 9:00 AM - 6:00 PM EAT</span>
+                </li>
+              </ul>
+
+              <div class="mt-4">
+                <h5 class="mb-3 text-primary">Follow Us</h5>
+                <div class="social-bubbles">
+                  <a href="#" class="social-bubble">
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                  <a href="#" class="social-bubble">
+                    <i class="fab fa-facebook-f"></i>
+                  </a>
+                  <a href="#" class="social-bubble">
+                    <i class="fab fa-linkedin-in"></i>
+                  </a>
+                  <a href="#" class="social-bubble">
+                    <i class="fab fa-github"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="position-relative py-4 bg-dark text-light">
+      <!-- Particles Background -->
+      <div id="particles" class="particles-container">
+        <div class="container position-relative" style="z-index: 2">
+          <!-- Particles Background (separate from content) -->
+
+          <div class="morphing-bubbles-hero">
+            <div class="morphing-bubble main-bubble"></div>
+            <div class="morphing-bubble secondary-bubble"></div>
+            <div class="morphing-bubble accent-bubble"></div>
+            <div class="morphing-bubble tiny-bubble-1"></div>
+            <div class="morphing-bubble tiny-bubble-2"></div>
+          </div>
+          <div class="row pt-5 mt-5">
+            <div class="col-md-6 mb-4 mb-md-0">
+              <h5>
+                <span class="text-primary">Hel</span>Crafters Technologies
+              </h5>
+              <p class="mb-2">Innovate. Craft. Elevate.</p>
+              <p>
+                &copy; <span class="current-year"></span> HelCrafters
+                Technologies. All rights reserved.
+              </p>
+
+              <!-- Floating bubbles in footer -->
+              <div class="footer-bubbles"></div>
+            </div>
+            <div class="col-md-3 mb-4 mb-md-0">
+              <h5 class="text-primary">Quick Links</h5>
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <a href="#" class="text-light hover-bubble">Home</a>
+                </li>
+                <li class="mb-2">
+                  <a href="#services" class="text-light hover-bubble"
+                    >Services</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a href="#about" class="text-light hover-bubble">About</a>
+                </li>
+                <li>
+                  <a href="#contact" class="text-light hover-bubble">Contact</a>
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-3">
+              <h5 class="text-primary">Legal</h5>
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <a href="#" class="text-light hover-bubble">Privacy Policy</a>
+                </li>
+                <li class="mb-2">
+                  <a href="#" class="text-light hover-bubble"
+                    >Terms of Service</a
+                  >
+                </li>
+                <li>
+                  <a href="#" class="text-light hover-bubble">Cookie Policy</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const navbar = document.querySelector(".navbar");
+        const links = document.querySelectorAll(".bubble-link");
+        const toggler = document.querySelector(".bubble-toggler");
+        const closeBtn = document.querySelector(".btn-close-menu");
+        const bubbleCanvas = document.querySelector(".bubble-canvas");
+        const collapse = new bootstrap.Collapse(
+          document.querySelector(".navbar-collapse"),
+          { toggle: false }
+        );
+        let hoverBubbleInterval;
+
+        // Toggle mobile menu
+        toggler.addEventListener("click", function () {
+          collapse.toggle();
+          if (document.querySelector(".navbar-collapse.show")) {
+            animateMenuItems();
+          }
+        });
+
+        // Close button
+        closeBtn.addEventListener("click", function () {
+          collapse.hide();
+        });
+
+        // Auto-close when clicking links
+        links.forEach((link) => {
+          link.addEventListener("click", function () {
+            if (window.innerWidth < 992) {
+              collapse.hide();
+            }
+          });
+        });
+
+        // Animate menu items with bubbles
+        function animateMenuItems() {
+          const navItems = document.querySelectorAll(".nav-item");
+          const startX = window.innerWidth - 50;
+          const startY = 30;
+
+          navItems.forEach((item, index) => {
+            // Reset item state
+            item.style.opacity = "0";
+            item.style.transform = "translateX(-30px)";
+
+            // Calculate end position
+            const rect = item.getBoundingClientRect();
+            const endX = rect.left + rect.width / 2 - startX;
+            const endY = rect.top + rect.height / 2 - startY;
+
+            // Create drawing bubbles
+            const bubbleCount = 12;
+            for (let i = 0; i < bubbleCount; i++) {
+              setTimeout(() => {
+                const bubble = document.createElement("div");
+                bubble.className = "drawing-bubble";
+                bubble.style.setProperty(
+                  "--start-x",
+                  `${Math.random() * 40 - 20}px`
+                );
+                bubble.style.setProperty(
+                  "--start-y",
+                  `${Math.random() * 40 - 20}px`
+                );
+                bubble.style.setProperty("--end-x", `${endX}px`);
+                bubble.style.setProperty("--end-y", `${endY}px`);
+                bubble.style.left = `${startX}px`;
+                bubble.style.top = `${startY}px`;
+                bubble.style.animationDelay = `${index * 0.3 + i * 0.08}s`;
+                bubbleCanvas.appendChild(bubble);
+
+                // Remove bubble after animation
+                setTimeout(() => {
+                  bubble.remove();
+                }, 1000);
+              }, index * 300);
+            }
+
+            // Show menu item after bubbles
+            setTimeout(() => {
+              item.style.opacity = "1";
+              item.style.transform = "translateX(0)";
+            }, index * 300 + bubbleCount * 80);
+          });
+        }
+
+        // Hover bubble effect for desktop
+        if (window.innerWidth >= 992) {
+          links.forEach((link) => {
+            link.addEventListener("mouseenter", startHoverBubbles);
+            link.addEventListener("mouseleave", stopHoverBubbles);
+          });
+        }
+
+        function startHoverBubbles(e) {
+          const link = e.target;
+          hoverBubbleInterval = setInterval(() => {
+            const rect = link.getBoundingClientRect();
+            const size = Math.random() * 8 + 4;
+            const x = rect.left + Math.random() * rect.width;
+            const y = rect.top + rect.height;
+            createBubble(x, y, size, true);
+          }, 150);
+        }
+
+        function stopHoverBubbles() {
+          clearInterval(hoverBubbleInterval);
+        }
+
+        function createBubble(x, y, size, isPersistent = false) {
+          const bubble = document.createElement("div");
+          bubble.className = "nav-bubble";
+          bubble.style.width = `${size}px`;
+          bubble.style.height = `${size}px`;
+          bubble.style.left = `${x}px`;
+          bubble.style.top = `${y}px`;
+          bubble.style.opacity = "0.7";
+          bubble.style.transform = "translateY(0) scale(1)";
+          bubble.style.animation = "float-up 2s infinite ease-in-out";
+          bubbleCanvas.appendChild(bubble);
+
+          if (!isPersistent) {
+            setTimeout(() => {
+              bubble.remove();
+            }, 2000);
+          }
+
+          return bubble;
+        }
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const translateBtn = document.getElementById('translateBtn');
+        const swapBtn = document.getElementById('swapBtn');
+        const sourceText = document.getElementById('sourceText');
+        const translatedText = document.getElementById('translatedText');
+        const sourceLang = document.getElementById('sourceLang');
+        const targetLang = document.getElementById('targetLang');
+        
+        // Using LibreTranslate API (free)
+        const API_URL = 'https://libretranslate.de/translate';
+        
+        // Translation function
+        async function translateText() {
+          if (!sourceText.value.trim()) {
+            showAlert('Please enter some text to translate', 'warning');
+            return;
+          }
+          
+          translateBtn.disabled = true;
+          translateBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Translating...';
+          
+          try {
+            const response = await fetch(API_URL, {
+              method: 'POST',
+              body: JSON.stringify({
+                q: sourceText.value,
+                source: sourceLang.value === 'auto' ? '' : sourceLang.value,
+                target: targetLang.value
+              }),
+              headers: { "Content-Type": "application/json" }
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+              translatedText.value = data.translatedText;
+              if (sourceLang.value === 'auto' && data.detectedLanguage) {
+                sourceLang.value = data.detectedLanguage.language;
+              }
+            } else {
+              throw new Error(data.error || 'Translation failed');
+            }
+          } catch (error) {
+            showAlert('Translation error: ' + error.message, 'danger');
+          } finally {
+            translateBtn.disabled = false;
+            translateBtn.innerHTML = '<i class="fas fa-language me-2"></i>Translate';
+          }
+        }
+        
+        // Swap languages function
+        function swapLanguages() {
+          if (sourceLang.value === 'auto') return;
+          
+          const tempLang = sourceLang.value;
+          sourceLang.value = targetLang.value;
+          targetLang.value = tempLang;
+          
+          const tempText = sourceText.value;
+          sourceText.value = translatedText.value;
+          translatedText.value = tempText;
+        }
+        
+        // Show alert function
+        function showAlert(message, type) {
+          // Create or reuse alert element
+          let alertBox = document.getElementById('translationAlert');
+          if (!alertBox) {
+            alertBox = document.createElement('div');
+            alertBox.id = 'translationAlert';
+            alertBox.className = `alert alert-${type} mt-3`;
+            alertBox.setAttribute('role', 'alert');
+            document.querySelector('#translation .glass-card').appendChild(alertBox);
+          }
+          
+          alertBox.className = `alert alert-${type} mt-3`;
+          alertBox.textContent = message;
+          
+          // Auto-hide after 5 seconds
+          setTimeout(() => {
+            alertBox.textContent = '';
+            alertBox.className = 'alert mt-3 d-none';
+          }, 5000);
+        }
+        
+        // Event listeners
+        translateBtn.addEventListener('click', translateText);
+        swapBtn.addEventListener('click', swapLanguages);
+        
+        // Optional: Auto-translate when source changes (with debounce)
+        let debounceTimer;
+        sourceText.addEventListener('input', () => {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => {
+            if (sourceText.value.trim() && sourceText.value !== translatedText.value) {
+              translateText();
+            }
+          }, 1000);
+        });
+      });
+    </script>
+  </body>
+</html>
