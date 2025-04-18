@@ -1131,49 +1131,51 @@
         const sourceText = document.getElementById('sourceText');
         const translatedText = document.getElementById('translatedText');
         const sourceLang = document.getElementById('sourceLang');
-        const targetLang = document.getElementById('targetLang');
+        const targetLang = document.getElementById('targetLang');        
         
-        // Using LibreTranslate API (free)
-        const API_URL = 'https://libretranslate.de/translate';
         
-        // Translation function
-        async function translateText() {
-          if (!sourceText.value.trim()) {
+    // Translation function
+    async function translateText() {
+        if (!sourceText.value.trim()) {
             showAlert('Please enter some text to translate', 'warning');
             return;
-          }
-          
-          translateBtn.disabled = true;
-          translateBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Translating...';
-          
-          try {
-            const response = await fetch(API_URL, {
-              method: 'POST',
-              body: JSON.stringify({
-                q: sourceText.value,
-                source: sourceLang.value === 'auto' ? '' : sourceLang.value,
-                target: targetLang.value
-              }),
-              headers: { "Content-Type": "application/json" }
+        }
+        
+        translateBtn.disabled = true;
+        translateBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Translating...';
+        
+        try {
+            const response = await fetch('http://localhost:5001/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    texts: [sourceText.value],
+                    target_langs: [targetLang.value],
+                    source_lang: sourceLang.value === 'auto' ? '' : sourceLang.value
+                })
             });
             
             const data = await response.json();
             
-            if (response.ok) {
-              translatedText.value = data.translatedText;
-              if (sourceLang.value === 'auto' && data.detectedLanguage) {
-                sourceLang.value = data.detectedLanguage.language;
-              }
+            if (data.success) {
+                translatedText.value = data.translations[0].translated[0];
+                if (sourceLang.value === 'auto' && data.detected_language) {
+                    sourceLang.value = data.detected_language;
+                }
             } else {
-              throw new Error(data.error || 'Translation failed');
+                throw new Error(data.error || 'Translation failed');
             }
-          } catch (error) {
+        } catch (error) {
             showAlert('Translation error: ' + error.message, 'danger');
-          } finally {
+        } finally {
             translateBtn.disabled = false;
             translateBtn.innerHTML = '<i class="fas fa-language me-2"></i>Translate';
-          }
         }
+    }
+        
+      
         
         // Swap languages function
         function swapLanguages() {
